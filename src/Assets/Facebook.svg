@@ -1,0 +1,14 @@
+<svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Facebook">
+<g clip-path="url(#clip0_1339_396)">
+<path id="Vector" d="M10.5 0.555664H1.5C0.67275 0.555664 0 1.22841 0 2.05566V11.0557C0 11.8829 0.67275 12.5557 1.5 12.5557H10.5C11.3273 12.5557 12 11.8829 12 11.0557V2.05566C12 1.22841 11.3273 0.555664 10.5 0.555664Z" fill="#1976D2"/>
+<path id="Vector_2" fill-rule="evenodd" clip-rule="evenodd" d="M10.125 6.55566H8.25V5.05566C8.25 4.64166 8.586 4.68066 9 4.68066H9.75V2.80566H8.25C7.65326 2.80566 7.08097 3.04272 6.65901 3.46467C6.23705 3.88663 6 4.45893 6 5.05566V6.55566H4.5V8.43066H6V12.5557H8.25V8.43066H9.375L10.125 6.55566Z" fill="#FAFAFA"/>
+</g>
+<rect x="0.5" y="1.05566" width="11" height="11" rx="2.5" stroke="white"/>
+</g>
+<defs>
+<clipPath id="clip0_1339_396">
+<rect y="0.555664" width="12" height="12" rx="3" fill="white"/>
+</clipPath>
+</defs>
+</svg>
