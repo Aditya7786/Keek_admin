@@ -68,7 +68,7 @@ const CampaignFilterOptions = ({ isModalVisible, setIsModalVisible }) => {
   const MultiValue = () => null;
 
   return (
-    <div className="w-[320px]  h-auto bg-white px-4">
+    <div className="w-[320px] h-auto bg-white px-4">
      <div className="w-[272px] h-[23px] mx-3 my-2 mb-4 border-b border-[#DFDFDF] flex items-center justify-between">
   <span className="flex-grow text-center">Filter</span>
   <button onClick={toggleModal} className="text-end mr-4">

@@ -18,10 +18,10 @@ import BarGraph from "../Manage/Dashboard/BarGraph";
 import Payment from "../Manage/Payment/Payment";
 import Influencers from "../Manage/DiscoverInfluencers/Influencers";
 import SavedList from "../Manage/DiscoverInfluencers/SavedList";
-import SavedListCards from "../Manage/DiscoverInfluencers/SavedListCards";
+import FavouritesList from "../Manage/DiscoverInfluencers/FavouritesList";
 import BrandsProfile from "../Manage/BrandsProfile/BrandsProfile";
 import Profile from "../Manage/BrandsProfile/Profile";
-import Settings from "../Manage/Settings/Settings";
+
 
 const MainRouter = () => {
   return (
@@ -48,12 +48,12 @@ const MainRouter = () => {
           }
         />
         
-        <Route path="/manageCampaign" element={<ManageCampaign />}/>
+        <Route path="/manageCampaign/:id" element={<ManageCampaign />}/>
         
-        <Route path="/Shortlisted" element={<ShortlistedPage />} />
+        <Route path="/Shortlisted/:id" element={<ShortlistedPage />} />
 
-        <Route path="/Approved" element={<ApprovedPage />} />
-        <Route path="/Rejected" element={<RejectedPage />} />
+        <Route path="/Approved/:id" element={<ApprovedPage />} />
+        <Route path="/Rejected/:id" element={<RejectedPage />} />
 
         <Route path="/AIRecommended" element={<AIRecommendPage />} />
 
@@ -68,8 +68,12 @@ const MainRouter = () => {
         />
         <Route
           path="/settings"
-        
-          element={<Settings />}
+          element={
+            <div className="h-screen w-screen flex items-center justify-center bg-slate-400">
+              {" "}
+              Settings
+            </div>
+          }
         />
         <Route
           path="/Support"
@@ -94,7 +98,7 @@ const MainRouter = () => {
         <Route path="/PieChartComponent" element={<PieChartComponent />} />
 
         <Route path="/savedlist" element={<SavedList/>} />
-        <Route path="/savedlist/:name" element={<SavedListCards/>} />
+        <Route path="/favouriteslist" element={<FavouritesList />} />
        
 
 {/* Brand */}

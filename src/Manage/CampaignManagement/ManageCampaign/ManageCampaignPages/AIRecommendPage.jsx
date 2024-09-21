@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Instagram from "../../../../Assets/instagram.png";
 import Facebook from "../../../../Assets/Facebook.png";
-// import X from "../../../../Assets/X.png";
+import X from "../../../../Assets/X.png";
 import YT from "../../../../Assets/yt.png";
 import { Link, useLocation } from "react-router-dom";
 import { Mycontext } from "../../../../utils/Context";
@@ -28,11 +28,11 @@ const AIRecommendPage = () => {
       icon: Instagram,
       bgColor: "#FFEDED",
     },
-    // {
-    //   name: "X",
-    //   icon: X,
-    //   bgColor: "#E3E3E3",
-    // },
+    {
+      name: "X",
+      icon: X,
+      bgColor: "#E3E3E3",
+    },
     {
       name: "Facebook",
       icon: Facebook,
@@ -55,7 +55,7 @@ const AIRecommendPage = () => {
           : "left-[320px] w-[calc(100%-320px)]"
       }  overflow-y-auto  bg-white space-y-4 p-4 `}
     >
-      <div className="flex  flex-col">
+      <div className="flex flex-col">
         <div className="flex flex-row p-6 items-center  border-b-2 gap-[3.14px]">
           <Link
             to="/CampaignManagement"

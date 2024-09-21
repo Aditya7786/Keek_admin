@@ -59,7 +59,7 @@ const Filter = ({
   return (
     <>
       {isFilterVisible && (
-        <div className="w-[350px] h-[450px] px-[20px] py-[17px]  absolute top-28 left-[50%] -translate-x-[70%] shadow-[2px_4px_14px_2px_rgba(0,0,0,0.25)] bg-white rounded-[10px]">
+        <div className="w-[350px] h-[450px] px-[20px] py-[17px] absolute top-28 left-2/3 -translate-x-[70%] shadow-[2px_4px_14px_2px_rgba(0,0,0,0.25)] bg-white rounded-[10px]">
           <div className="w-[309px] h-10 flex-col justify-start items-start gap-0.5 inline-flex">
             <div className="self-stretch text-black text-base font-semibold leading-[19px]">
               Social profiles
@@ -112,7 +112,7 @@ const Filter = ({
               <button
                 className="w-[170px] h-[30px] px-4 bg-[#0066ff] rounded justify-center items-center gap-3 flex"
                 onClick={handleAddClick}
-              > 
+              >
                 <div className="text-center text-white text-sm font-normal leading-[14px]">
                   Add
                 </div>

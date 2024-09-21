@@ -1,34 +1,26 @@
-import React, { useContext , useState } from "react";
+import React, { useContext , useState, useEffect } from "react";
 import Instagram from "../../../../Assets/instagram.png";
 import Facebook from "../../../../Assets/Facebook.png";
-// import X from "../../../../Assets/X.png";
+import X from "../../../../Assets/X.png";
 import YT from "../../../../Assets/yt.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { Mycontext } from "../../../../utils/Context";
 import { MdChevronRight } from "react-icons/md";
 import ReadMore from "../../Components/ReadMoreComponent";
 import { FiArrowUpRight } from "react-icons/fi";
+import axios from "axios";
+
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import Profile from '../Profile';
-
-
-
-
 
 const RejectedPage = () => {
   const contextState = useContext(Mycontext);
   const expanded = contextState.expanded;
   const location = useLocation();
   const currentPath = location.pathname;
+  const params = useParams()
+  const navigate = useNavigate()
 
   const [currentPage, setCurrentPage] = useState(1);
-
-
-    // Added state management for the profile popup
-    const [isProfileVisible, setProfileVisible] = useState(false);
-    const [selectedProfile, setSelectedProfile] = useState(null);
-  
-
 
   const campaignDetails = {
     about:
@@ -44,11 +36,11 @@ const RejectedPage = () => {
       icon: Instagram,
       bgColor: "#FFEDED",
     },
-    // {
-    //   name: "X",
-    //   icon: X,
-    //   bgColor: "#E3E3E3",
-    // },
+    {
+      name: "X",
+      icon: X,
+      bgColor: "#E3E3E3",
+    },
     {
       name: "Facebook",
       icon: Facebook,
@@ -62,7 +54,7 @@ const RejectedPage = () => {
   ];
 
 
-  const influencers = [
+  const influencerss = [
     {
       name: 'Gautam Sachdeva',
       niche: ["Travel", "Fashion", "Photography", "Lifestyle"],
@@ -116,6 +108,41 @@ const RejectedPage = () => {
      
     // Add more influencers here
   ];
+  const handleStopCampaign = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/api/campaigns/${selectedCampaign._id}`, {
+        status: "Draft"
+      });
+      fetchCampaigns(); // Refetch campaigns data after updating
+      navigate('/CampaignManagement')
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleSubmit = async (influencerName) => {
+    try {
+      await axios.put(`http://localhost:5000/api/campaigns/${selectedCampaign._id}`, {
+        influencerName: influencerName,
+        campstatus: "Shortlisted",
+      });
+      fetchCampaigns(); // Refetch campaigns data after updating
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const [campaigns, setCampaigns] = useState([])
+const fetchCampaigns =async ()=> await axios.get("http://localhost:5000/api/campaigns")
+.then((res)=> setCampaigns(res.data))
+.catch((err)=>console.log(err));
+
+  useEffect(() => {
+fetchCampaigns()
+console.log(campaigns)
+  },[])
+  const selectedCampaign = campaigns?.find(campaign => campaign.id === params.id);
+  const influencers = selectedCampaign && selectedCampaign.influencers
+    ? selectedCampaign.influencers.filter(influencer => influencer.campstatus === "Rejected")
+    : [];
 
   const recordsPerPage = 4;
 
@@ -139,17 +166,6 @@ const RejectedPage = () => {
     }
   };
 
-// Function to handle the profile click
-const handleProfileOpen = (influencer) => {
-  setSelectedProfile(influencer);
-  setProfileVisible(true);
-};
-
-const handleProfileClose = () => {
-  setProfileVisible(false);
-  setSelectedProfile(null);
-};
-
   const startIndex = (currentPage - 1) * itemsPerPage;
   const selectedInfluencers = influencers.slice(
     startIndex,
@@ -162,9 +178,9 @@ const handleProfileClose = () => {
       class={` flex relative ${!expanded
           ? "left-[100px] w-[calc(100%-110px)]"
           : "left-[320px] w-[calc(100%-320px)]"
-        }  overflow-y-auto space-y-4 p-4 `}
+        }  overflow-y-auto  bg-white space-y-4 p-4 `}
     >
-      <div className="flex bg-white flex-col">
+      <div className="flex flex-col">
         <div className="flex flex-row p-6 items-center  border-b-2 gap-[3.14px]">
           <Link
             to="/CampaignManagement"
@@ -255,7 +271,7 @@ const handleProfileClose = () => {
             style={{ height: "100%" }}
           >
             <div>
-              <button className="text-[#FA6A5E] font-body text-[16px] font-normal">
+              <button onClick={() => handleStopCampaign()} className="text-[#FA6A5E] font-body text-[16px] font-normal">
                 Stop campaign
               </button>
             </div>
@@ -264,7 +280,7 @@ const handleProfileClose = () => {
 
         <div className="flex border-b border-border">
           <div className="flex space-x-4">
-            <Link to="/manageCampaign">
+            <Link to={`/manageCampaign/${params.id}`}>
               <button
                 className={`py-2 px-4 ${location.pathname === "/manageCampaign"
                     ? "text-primary border-b-2 border-blue-500 font-semibold"
@@ -274,7 +290,7 @@ const handleProfileClose = () => {
                 Interest Received
               </button>
             </Link>
-            <Link to="/Shortlisted">
+            <Link to={`/Shortlisted/${params.id}`}>
               <button
                 className={`py-2 px-4 ${location.pathname === "/Shortlisted"
                     ? "text-primary border-b-2 border-blue-500 font-semibold"
@@ -284,7 +300,7 @@ const handleProfileClose = () => {
                 Shortlisted
               </button>
             </Link>
-            <Link to="/Approved">
+            <Link to={`/Approved/${params.id}`}>
               <button
                 className={`py-2 px-4 ${location.pathname === "/Approved"
                     ? "text-primary border-b-2 border-blue-500 font-semibold"
@@ -294,7 +310,7 @@ const handleProfileClose = () => {
                 Approved
               </button>
             </Link>
-            <Link to="/Rejected">
+            <Link to={`/Rejected/${params.id}`}>
               <button
                 className={`py-2 px-4 ${location.pathname === "/Rejected"
                     ? "text-primary border-b-2 border-blue-500 font-semibold"
@@ -337,12 +353,7 @@ const handleProfileClose = () => {
             <tbody class=" "  >
               {records.map((influencer, index) => (
                 <tr className="border-b" key={index} style={{ height: "85px" }}>
-                       <td
-  className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal cursor-pointer"
-  onClick={() => handleProfileOpen(influencer)} // Pass the current influencer
->
-  {influencer.name}
-</td>
+                  <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">{influencer.name}</td>
                   <td className="py-3 px-4 text-[#191D23] text-[16px] font-body font-normal">
                     {influencer.niche.length > 2
                       ? `${influencer.niche.slice(0, 2).join(', ')} +${influencer.niche.length - 2}`
@@ -375,7 +386,7 @@ const handleProfileClose = () => {
                     </a>                  </td>
                   <td className="py-3 px-6 text-[14px] font-body font-semibold">
                     <Link>
-                    <button className="bg-[#0066FF] text-[#FFFFFF] py-2 px-5 rounded-lg">Shortist</button>
+                    <button onClick={() => handleSubmit(influencer.name)} className="bg-[#0066FF] text-[#FFFFFF] py-2 px-5 rounded-lg">Shortist</button>
                     </Link>
                   </td>
                 </tr>
@@ -410,24 +421,6 @@ const handleProfileClose = () => {
           </div>
 
       </div>
-
-            {/* Added Profile component with props */}
-            {isProfileVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="relative bg-white p-5 rounded-lg shadow-lg w-[90%] md:w-[60%] lg:w-[40%]">
-            <button onClick={handleProfileClose} className="absolute top-2 right-2 text-red-500 font-bold">Close</button>
-            {selectedProfile && (
-              <Profile 
-                isOpen={isProfileVisible} 
-                setIsOpen={setProfileVisible} 
-                selectData={selectedProfile} 
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      
     </div>
   );
 };

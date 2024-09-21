@@ -1,32 +1,23 @@
-// ManageCampaign.jsx
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Instagram from "../../../Assets/instagram.png";
 import Facebook from "../../../Assets/Facebook.png";
+import X from "../../../Assets/X.png";
 import YT from "../../../Assets/yt.png";
 import { Mycontext } from "../../../utils/Context";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { MdChevronRight } from "react-icons/md";
 import ReadMore from "../Components/ReadMoreComponent";
 import { FiArrowUpRight } from "react-icons/fi";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import Profile from '../../CampaignManagement/ManageCampaign/Profile'; // Correct import path
-
-
+import axios from "axios";
 
 const ManageCampaign = () => {
   const contextState = useContext(Mycontext);
   const expanded = contextState.expanded;
   const location = useLocation();
   const currentPath = location.pathname;
-
-   // State management for the profile popup
-  const [isProfileVisible, setProfileVisible] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState(null);
-
-
-
-
-  // Campaign details and platform data
+  const params = useParams()
+  const navigate=useNavigate()
   const campaignDetails = {
     about:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio.",
@@ -41,11 +32,11 @@ const ManageCampaign = () => {
       icon: Instagram,
       bgColor: "#FFEDED",
     },
-    // {
-    //   name: "X",
-    //   icon: X,
-    //   bgColor: "#E3E3E3",
-    // },
+    {
+      name: "X",
+      icon: X,
+      bgColor: "#E3E3E3",
+    },
     {
       name: "Facebook",
       icon: Facebook,
@@ -57,12 +48,50 @@ const ManageCampaign = () => {
       bgColor: "#FFE4E1",
     },
   ];
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+  const handleStopCampaign = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/api/campaigns/${selectedCampaign._id}`, {
+        status: "Draft"
+      });
+      fetchCampaigns(); // Refetch campaigns data after updating
+      navigate('/CampaignManagement')
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleReject = async (influencerName) => {
+    try {
+      await axios.put(`http://localhost:5000/api/campaigns/${selectedCampaign._id}`, {
+        influencerName: influencerName,
+        campstatus: "Rejected",
+      });
+      fetchCampaigns(); // Refetch campaigns data after updating
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleSubmit = async (influencerName) => {
+    try {
+      await axios.put(`http://localhost:5000/api/campaigns/${selectedCampaign._id}`, {
+        influencerName: influencerName,
+        campstatus: "Shortlisted",
+      });
+      fetchCampaigns(); // Refetch campaigns data after updating
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const influencers = [
+  const influencerss = [
     {
       name: "Gautam Sachdeva",
-      niche: ["Travel", "Fashion", "hhjk", "uuuss"],
+      niche: ["Travel", "Fashion","hhjk","uuuss"],
       platforms: {
         instagram: "Instagram",
         facebook: "Facebook",
@@ -72,7 +101,7 @@ const ManageCampaign = () => {
     },
     {
       name: "Gautam Sachdeva",
-      niche: ["Travel", "Fashion", "hhjk"],
+      niche: ["Travel", "Fashion","hhjk"],
       platforms: {
         instagram: "Instagram",
         facebook: "Facebook",
@@ -82,7 +111,7 @@ const ManageCampaign = () => {
     },
     {
       name: "Gautam Sachdeva",
-      niche: ["Travel", "Fashion", "Travel", "Fashion"],
+      niche: ["Travel", "Fashion","Travel", "Fashion"],
       platforms: {
         instagram: "Instagram",
         facebook: "Facebook",
@@ -102,7 +131,7 @@ const ManageCampaign = () => {
     },
     {
       name: "Gautam Sachdeva",
-      niche: ["Travel", "Fashion", "Travel", "Fashion"],
+      niche: ["Travel", "Fashion","Travel", "Fashion"],
       platforms: {
         instagram: "Instagram",
         facebook: "Facebook",
@@ -110,18 +139,29 @@ const ManageCampaign = () => {
         linkedin: "LinkedIn",
       },
     },
-
-    // Add more influencers here as needed
+    
+    // Add more campaigns here as needed
   ];
+  const [campaigns, setCampaigns] = useState()
+const fetchCampaigns =async ()=> await axios.get("http://localhost:5000/api/campaigns")
+.then((res)=> setCampaigns(res.data))
+.catch((err)=>console.log(err));
 
-  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+fetchCampaigns()
+  },[])
+  const selectedCampaign = campaigns?.find(campaign => campaign.id === params.id);
+  const influencers = selectedCampaign && selectedCampaign.influencers
+    ? selectedCampaign.influencers.filter(influencer => influencer.campstatus === "Received")
+    : [];
   const recordsPerPage = 4;
+
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
   const records = influencers.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(influencers.length / recordsPerPage);
-  const itemsPerPage = 4;
-
+  const itemsPerPage = 4; // Number of campaigns to display per page
+ 
   const handlePrevClick = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -133,37 +173,28 @@ const ManageCampaign = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-// Function to handle the profile click
-const handleProfileOpen = (influencer) => {
-  setSelectedProfile(influencer);
-  setProfileVisible(true);
-};
-
-const handleProfileClose = () => {
-  setProfileVisible(false);
-  setSelectedProfile(null);
-};
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const selectedInfluencers = influencers.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+
   return (
     <div
       class={` flex relative ${
         !expanded
           ? "left-[100px] w-[calc(100%-110px)]"
           : "left-[320px] w-[calc(100%-320px)]"
-      }  overflow-y-auto   space-y-4 p-4 `}
+      }  overflow-y-auto  bg-white space-y-4 p-4 `}
     >
-      <div className="flex bg-white flex-col">
-        <div className="flex flex-row w-[1086px] h-[86px] p-5 items-center  border-b-2 gap-[3.14px]">
+      <div className="flex flex-col">
+        <div className="flex flex-row p-6 items-center  border-b-2 gap-[3.14px]">
           <Link
             to="/CampaignManagement"
-            className={`text-[16px] font-normal font-body flex flex-row ${
+            className={`text-[16px] font-normal flex flex-row ${
               currentPath === "/CampaignManagement"
-                ? "text-[#2463EB]"
+                ? "text-blue-700"
                 : "text-black"
             }`}
           >
@@ -171,7 +202,8 @@ const handleProfileClose = () => {
             <MdChevronRight className="m-1 items-center" size={"15.7px"} />
           </Link>
           <Link
-            className={`text-[16px] font-semibold font-body text-[#2463eb] gap-x-2`}
+           
+            className={`text-[16px] font-semibold text-[#2463eb] gap-x-2`}
           >
             Manage Campaign
           </Link>
@@ -214,11 +246,11 @@ const handleProfileClose = () => {
                   PARTICIPANTS:
                 </span>
                 <p className="font-body text-xl font-normal">
-                  <span className="text-[#0062F5]">
-                    {campaignDetails.participants} {""}/
-                  </span>{" "}
-                  100
-                </p>
+                                  <span className="text-[#0062F5]">
+                                    {campaignDetails.participants} {""}/
+                                  </span>{" "}
+                                  100
+                                </p>
               </div>
 
               <div>
@@ -226,8 +258,8 @@ const handleProfileClose = () => {
                   COMPENSATION:
                 </span>
                 <p className="font-body text-[16px] font-normal">
-                  {campaignDetails.compensation.join(", ")}
-                </p>
+  {campaignDetails.compensation.join(', ')}
+</p>
               </div>
             </div>
             <div className="space-y-10">
@@ -248,7 +280,7 @@ const handleProfileClose = () => {
             style={{ height: "100%" }}
           >
             <div>
-              <button className="text-[#FA6A5E] font-body text-[16px] font-normal">
+              <button onClick={() => handleStopCampaign()} className="text-[#FA6A5E] font-body text-[16px] font-normal">
                 Stop campaign
               </button>
             </div>
@@ -257,7 +289,7 @@ const handleProfileClose = () => {
 
         <div className="flex border-b border-border">
           <div className="flex space-x-4">
-            <Link to="/manageCampaign">
+            <Link to={`/manageCampaign/${params.id}`}>
               <button
                 className={`py-2 px-4 ${
                   location.pathname === "/manageCampaign"
@@ -265,10 +297,10 @@ const handleProfileClose = () => {
                     : "text-muted hover:text-muted-foreground"
                 }`}
               >
-                Interest Received
+               Interest Received
               </button>
             </Link>
-            <Link to="/Shortlisted">
+            <Link to={`/Shortlisted/${params.id}`}>
               <button
                 className={`py-2 px-4 ${
                   location.pathname === "/Shortlisted"
@@ -279,7 +311,7 @@ const handleProfileClose = () => {
                 Shortlisted
               </button>
             </Link>
-            <Link to="/Approved">
+            <Link to={`/Approved/${params.id}`}>
               <button
                 className={`py-2 px-4 ${
                   location.pathname === "/Approved"
@@ -287,10 +319,10 @@ const handleProfileClose = () => {
                     : "text-muted hover:text-muted-foreground"
                 }`}
               >
-                Approved
+               Approved
               </button>
             </Link>
-            <Link to="/Rejected">
+            <Link to={`/Rejected/${params.id}`}>
               <button
                 className={`py-2 px-4 ${
                   location.pathname === "/Rejected"
@@ -298,7 +330,7 @@ const handleProfileClose = () => {
                     : "text-muted hover:text-muted-foreground"
                 }`}
               >
-                Rejected
+               Rejected
               </button>
             </Link>
             <Link to="/AIRecommended">
@@ -309,9 +341,10 @@ const handleProfileClose = () => {
                     : "text-muted hover:text-muted-foreground"
                 }`}
               >
-                AI Recommended
+              AI Recommended
               </button>
             </Link>
+          
           </div>
           <div className="relative">
             <span className="absolute top-0 left-0 transform translate-x-1/2 -translate-y-1/2 bg-destructive rounded-full w-2.5 h-2.5"></span>
@@ -320,88 +353,62 @@ const handleProfileClose = () => {
 
         <div class="">
           <table class="min-w-full  bg-white ">
-            <thead>
+          <thead>
               <tr class=" border-b  uppercase " style={{ height: "80px" }}>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  Influencer Name
-                </th>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  Niche
-                </th>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  Instagram
-                </th>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  Facebook
-                </th>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  Youtube
-                </th>
-                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">
-                  LinkedIn
-                </th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">Influencer Name</th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">Niche</th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">Instagram</th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">Facebook</th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">Youtube</th>
+                <th class="py-3 px-6 text-left text-[#797A7B] text-[12px] font-body font-semibold">LinkedIn</th>
+
               </tr>
             </thead>
-            <tbody class=" ">
+            <tbody class=" "  >
               {records.map((influencer, index) => (
                 <tr className="border-b" key={index} style={{ height: "85px" }}>
-                <td
-  className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal cursor-pointer"
-  onClick={() => handleProfileOpen(influencer)} // Pass the current influencer
->
-  {influencer.name}
-</td>
-
-                  <td className="py-3 px-4 text-[#191D23]  text-[16px] font-body font-normal">
+                  <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">{influencer.name}</td>
+                  <td className="py-3 px-4 text-[#191D23] text-[16px] font-body font-normal">
                     {influencer.niche.length > 2
-                      ? `${influencer.niche.slice(0, 2).join(", ")} +${
-                          influencer.niche.length - 2
-                        }`
-                      : influencer.niche.join(", ")}
+                      ? `${influencer.niche.slice(0, 2).join(', ')} +${influencer.niche.length - 2}`
+                      : influencer.niche.join(', ')}
                   </td>
                   <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">
-                    <a
-                      className="flex items-center"
-                      href={influencer.platforms.instagram}
-                    >
-                      Instagram
+                    <a className="flex items-center" href={influencer.platforms.instagram}>
+                    Instagram 
                       <FiArrowUpRight className="ml-1  text-[#0066ff]" />
+
                     </a>
                   </td>
                   <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">
-                    <a
-                      className="flex items-center"
-                      href={influencer.platforms.facebook}
-                    >
-                      facebook
+                    <a className="flex items-center" href={influencer.platforms.facebook}>
+                    facebook
                       <FiArrowUpRight className="ml-1  text-[#0066ff]" />
-                    </a>{" "}
-                  </td>
+
+                    </a>                  </td>
                   <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">
-                    <a
-                      className="flex items-center"
-                      href={influencer.platforms.youtube}
-                    >
-                      youtube
+                    <a className="flex items-center" href={influencer.platforms.youtube}>
+                    youtube
                       <FiArrowUpRight className="ml-1  text-[#0066ff]" />
-                    </a>{" "}
-                  </td>
+
+                    </a>                  </td>
                   <td className="py-3 px-6 text-[#191D23] text-[16px] font-body font-normal">
-                    <a
-                      className="flex items-center"
-                      href={influencer.platforms.linkedin}
-                    >
-                      linkedin
+                    <a className="flex items-center" href={influencer.platforms.linkedin}>
+                    linkedin
                       <FiArrowUpRight className="ml-1  text-[#0066ff]" />
-                    </a>{" "}
+
+                    </a>                  </td>
+                  <td className="py-3 px-6 text-[14px] font-body font-semibold">
+                  <button onClick={() => handleReject(influencer.name)} className="text-[#e32828] w-[10px]">
+      Reject
+    </button>
+                    
                   </td>
                   <td className="py-3 px-6 text-[14px] font-body font-semibold">
-                    <button className="text-[#e32828] w-[10px]">Reject</button>
-                  </td>
-                  <td className="py-3 px-6 text-[14px] font-body font-semibold">
-                    <button className="bg-[#0066FF] text-[#FFFFFF] w-[100px] h-[35px] px-4 rounded-lg border border-[#384edd] font-semibold font-['Open Sans'] text-sm leading-[14px]">
-                      Shortlist
-                    </button>
+                  <button onClick={() => handleSubmit(influencer.name)} className="bg-[#0066FF] text-[#FFFFFF] w-[100px] h-[35px] px-4 rounded-lg border border-[#384edd] font-semibold font-['Open Sans'] text-sm leading-[14px]">
+      Shortlist
+    </button>
+                    
                   </td>
                 </tr>
               ))}
@@ -409,28 +416,29 @@ const handleProfileClose = () => {
           </table>
         </div>
 
+
+
+
         <div className="mt-8">
           <div className="mt-auto flex justify-end p-8">
             <div className="flex items-center gap-1 text-sm font-normal">
               <button
                 onClick={handlePrevClick}
                 disabled={currentPage === 1}
-                className={`p-2 ${
-                  currentPage === 1 ? "text-gray-400" : "text-black"
-                }`}
+                className={`p-2 ${currentPage === 1 ? 'text-gray-400' : 'text-black'}`}
               >
                 <FaAngleLeft />
               </button>
-              <span className="text-[#1f2223]">Page {currentPage}</span>
+              <span className="text-[#1f2223]">
+                Page {currentPage}
+              </span>
               <span className="text-[#797a7b] leading-tight">
                 of {totalPages}
               </span>
               <button
                 onClick={handleNextClick}
                 disabled={currentPage === totalPages}
-                className={`p-2 ${
-                  currentPage === totalPages ? "text-gray-400" : "text-black"
-                }`}
+                className={`p-2 ${currentPage === totalPages ? 'text-gray-400' : 'text-black'}`}
               >
                 <FaAngleRight />
               </button>
@@ -438,28 +446,10 @@ const handleProfileClose = () => {
           </div>
         </div>
 
+      
 
       </div>
-
-             {/* Added Profile component with props */}
-             {isProfileVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="relative bg-white p-5 rounded-lg shadow-lg w-[90%] md:w-[60%] lg:w-[40%]">
-            <button onClick={handleProfileClose} className="absolute top-2 right-2 text-red-500 font-bold">Close</button>
-            {selectedProfile && (
-              <Profile 
-                isOpen={isProfileVisible} 
-                setIsOpen={setProfileVisible} 
-                selectData={selectedProfile} 
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      
     </div>
-
   );
 };
 

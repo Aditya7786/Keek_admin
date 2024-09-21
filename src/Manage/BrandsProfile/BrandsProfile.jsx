@@ -91,10 +91,10 @@ const BrandsProfile = () => {
         !expanded
           ? "left-[100px] w-[calc(100%-110px)]"
           : "left-[320px] w-[calc(100%-320px)]"
-      } overflow-y-auto   `}
+      } overflow-y-auto bg-white pb-[115px]`}
     >
-      <div className={` bg-white ${expanded ? "w-[1120px] ml-[21px]" : "w-full"} h-[918px]  `}>
-        <div className="flex items-center relative top-[45px] ml-4 justify-between mb-[42px]">
+      <div className="mr-[74px] mt-[45px] ml-[21px]">
+        <div className="flex items-center justify-between mb-[42px]">
           <div className="flex items-center gap-[11px]">
             <img
               src={Profile}
@@ -121,7 +121,7 @@ const BrandsProfile = () => {
             </div>
           </div>
           {editable ? (
-            <div className="flex w-[320px] mr-10 items-center gap-[14px] text-white text-sm">
+            <div className="flex w-[320px] items-center gap-[14px] text-white text-sm">
               <button
                 onClick={handleCancelClick}
                 className="flex h-[35px] px-4 text-[#06F] items-center justify-center gap-2 flex-[1_0_0] rounded border border-[#06F]"
@@ -138,25 +138,24 @@ const BrandsProfile = () => {
           ) : (
             <button
               onClick={() => setEditable(true)}
-              className="px-4 w-[170px] h-[35px] mr-10 flex items-center justify-center gap-3 border rounded border-[#06F] text-[#06F] text-sm"
+              className="px-4 w-[170px] h-[35px] flex items-center justify-center gap-3 border rounded border-[#06F] text-[#06F] text-sm"
             >
               Edit Profile
             </button>
           )}
         </div>
-        <hr className="w-full border-[1px] bg-[#D2D3D3] top-[5%] relative  " />
-        
+        <hr className="w-full" />
         {editableData.map((item, index) => (
           <div key={index}>
             <div
-              className={`flex  py-8 gap-x-[62px] ${
+              className={`flex py-8 gap-x-[62px] ${
                 editable &&
                 (item.name === "Niche" || item.name === "Social profiles") &&
                 "justify-between"
               } `}
             >
-              <div className="w-[256px] mt-8  ml-4 ">
-                <h3 className="text-lg  font-semibold text-[#06F]">
+              <div className="w-[256px]">
+                <h3 className="text-lg font-semibold text-[#06F]">
                   {item.name}
                 </h3>
                 <span className="text-[#797A7B] text-sm">
@@ -168,7 +167,7 @@ const BrandsProfile = () => {
                   item.name === "Niche"
                     ? "flex-row gap-1.5 items-center"
                     : "flex-col gap-3"
-                } mt-8  ml-4 text-start gap text-[#1F2223]`}
+                } text-start gap text-[#1F2223]`}
               >
                 {Array.isArray(item.data) ? (
                   item.data.map((subItem, subIndex) => (
@@ -219,7 +218,7 @@ const BrandsProfile = () => {
                 )}
               </div>
               {editable && item.name === "Niche" && (
-                <div className="flex items-center mr-10 justify-center relative">
+                <div className="flex items-center justify-center relative">
                   <button
                     onClick={() => setIsNicheVisible(!isNicheVisible)}
                     className="text-sm text-[#06F]"
@@ -234,7 +233,7 @@ const BrandsProfile = () => {
                 </div>
               )}
               {editable && item.name === "Social profiles" && (
-                <div className="flex items-center mr-10 justify-center relative">
+                <div className="flex items-center justify-center relative">
                   <button
                     onClick={() => setIsFilterVisible(!isFilterVisible)}
                     className="text-sm text-[#06F]"
@@ -250,8 +249,7 @@ const BrandsProfile = () => {
                 </div>
               )}
             </div>
-            <hr className="w-full border-[1px] bg-[#D2D3D3] top-[5%] relative  " />
-        
+            <hr className="w-full" />
           </div>
         ))}
       </div>

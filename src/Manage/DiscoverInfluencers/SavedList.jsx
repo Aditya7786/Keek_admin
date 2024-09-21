@@ -2,34 +2,39 @@ import React, { useContext, useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Mycontext } from "../../utils/Context";
 import InfluencerCard from "./InfluencerCard";
+import { FaHeart } from "react-icons/fa6";
 
 const SavedList = () => {
   const contextState = useContext(Mycontext);
   const expanded = contextState.expanded;
-  const listData = contextState.listItemData;
-  const setListData = contextState.setListItemData;
 
-  // const [addList, setAddList] = useState(listItem);
+  const [addList, setAddList] = useState([
+    { name: "Food", influencersCount: 20 },
+    { name: "Work", influencersCount: 40 },
+    { name: "Travel", influencersCount: 15 },
+    { name: "Fashion", influencersCount: 20 },
+  ]);
+
   const [openIndex, setOpenIndex] = useState(null);
 
   const addNewCard = () => {
     const newCard = {
-      name: `Add List Name ${listData.length + 1}`,
-      influencers: [],
+      name: `Add List Name ${addList.length + 1}`,
+      influencersCount: 0,
     };
-    setListData([...listData, newCard]);
+    setAddList([...addList, newCard]);
   };
 
   const handleRename = (oldName, newName) => {
-    setListData(
-      listData.map((item) =>
+    setAddList(
+      addList.map((item) =>
         item.name === oldName ? { ...item, name: newName } : item
       )
     );
   };
 
   const handleDelete = (name) => {
-    setListData(listData.filter((item) => item.name !== name));
+    setAddList(addList.filter((item) => item.name !== name));
   };
 
   const handleOpenIndex = useCallback((index) => {
@@ -53,11 +58,11 @@ const SavedList = () => {
         !expanded
           ? "left-[100px] w-[calc(100%-110px)]"
           : "left-[320px] w-[calc(100%-320px)]"
-      } overflow-y-auto  space-y-4 p-4`}
+      } overflow-y-auto bg-white space-y-4 p-4`}
     >
-      <div className={ `bg-white ${expanded ? "w-[1120px] h-[897px]" : "w-full "} `}>
+      <div className="bg-white w-full">
         <div className="flex w-full justify-between items-center bg-white border-border">
-          <div className="pt-[18px] ml-4 px-2 pb-8">
+          <div className="pt-[18px] px-2 pb-8">
             <h1 className="text-[24px] font-semibold text-[#101828]">
               Discover Influencer
             </h1>
@@ -76,8 +81,8 @@ const SavedList = () => {
           </button>
         </div>
 
-        <nav className={`mb-[27px] ml-4 ${expanded ?" w-[1050px] " : " " }`}>
-          <ul className="flex gap-5"> 
+        <nav className="mb-[27px]">
+          <ul className="flex gap-5">
             <Link to={"/discoverInfluencers"}>
               <li className="text-[#57595A]">Influencers</li>
             </Link>
@@ -90,13 +95,26 @@ const SavedList = () => {
           <hr className="h-[2px] w-full" />
         </nav>
 
-        <div className="flex ml-4 space-x-4">
+        <div className="flex space-x-4">
           <div className="flex flex-row mt-[47px] flex-wrap gap-x-[18px] gap-y-[37px] items-center">
-            {listData.map((list, index) => (
+            <Link to={"/favouriteslist"}>
+              <div className="flex box-border items-center h-[90px] w-[250px] rounded-[10px] bg-white shadow-[2px_4px_14px_2px_rgba(0,0,0,0.25)]">
+                <div className="flex items-center space-x-6 px-[32px] py-[25px]">
+                  <span className="mt-1 scale-150 text-red-600">
+                    <FaHeart size={"1.3em"} aria-hidden="true" />
+                  </span>
+                  <div className="flex flex-col items-center border-l border-border">
+                    <h3 className="text-sm ml-[19px]">Favorites</h3>
+                    <p className="text-[10px] text-[#797A7B]">Influencer</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+            {addList.map((list, index) => (
               <InfluencerCard
-                key={list.name} // Use list.name or a unique ID if available
+                key={list.name} // Assuming names are unique
                 name={list.name}
-                influencers={list.influencers}
+                influencersCount={list.influencersCount}
                 index={index}
                 openIndex={openIndex}
                 onOpenIndex={handleOpenIndex}
